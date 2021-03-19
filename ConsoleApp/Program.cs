@@ -2,13 +2,13 @@
 using System.Data;
 using System.IO;
 using System.Linq;
-using ExhallCCStats.Entities;
+using Entities;
 
-namespace ExhallCCStats
+namespace ConsoleApp
 {
-    public class General
+    internal class Program
     {
-        public void CreateScripts()
+        public static void Main(string[] args)
         {
             string filePath = "";
             
@@ -34,16 +34,3 @@ namespace ExhallCCStats
         }
     }
 }
-
-/*
-    So, let's lay out a project structure that we want:
-    
-    1. Read data from csv file
-    
-    2. Parse the data from CSV to class
-    
-    3. For each of these entries, create an insert w/ check statement
-    
-    Also, will the csv files be in the correct format we want (single source of data?)
-*/
-
