@@ -8,7 +8,7 @@
         <OutputType>Exe</OutputType>
         <AppDesignerFolder>Properties</AppDesignerFolder>
         <RootNamespace>ConsoleApp</RootNamespace>
-        <AssemblyName>ConsoleApp</AssemblyName>
+        <AssemblyName>SQLScriptGenerator</AssemblyName>
         <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
     </PropertyGroup>

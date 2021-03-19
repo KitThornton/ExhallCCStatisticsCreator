@@ -66,8 +66,8 @@ namespace ConsoleApp
         private static string CreateInsertStatement(BattingSummary d, string tableName)
         {
             string test =  $@"
-INSERT INTO {tableName} VALUES ({d.PlayerName}, {d.Matches}, {d.Innings}, {d.Average}) 
-+ {System.Environment.NewLine}";
+INSERT INTO {tableName} VALUES ('{d.PlayerName}', {d.Matches}, {d.Innings}, {d.Average}) 
+{System.Environment.NewLine}";
 
             return test;
         }
