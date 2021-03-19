@@ -5,23 +5,15 @@ namespace Entities
     public class BattingSummary
     {
         public string PlayerName { get; set; }
-        
         public int Matches { get; set; }
-        
         public int Innings { get; set; }
-        
+        public int NotOuts { get; set; }
         public int Runs { get; set; }
-        
-        public int HighScore { get; set; }
-        
-        public decimal Average { get; set; }
-        
+        public string HighScore { get; set; }
+        public decimal? Average { get; set; }
         public int Fifties { get; set; }
-        
         public int Hundereds { get; set; }
-        
         public int Catches { get; set; }
-        
         public int Stumpings { get; set; }
     }
 }
