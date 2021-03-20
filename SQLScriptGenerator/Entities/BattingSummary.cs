@@ -12,7 +12,7 @@ namespace Entities
         public string HighScore { get; set; }
         public decimal? Average { get; set; }
         public int Fifties { get; set; }
-        public int Hundereds { get; set; }
+        public int Hundreds { get; set; }
         public int Catches { get; set; }
         public int Stumpings { get; set; }
     }

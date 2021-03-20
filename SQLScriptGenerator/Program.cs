@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -30,7 +29,7 @@ namespace ConsoleApp
                 
                 list.Add(line);
             }
-
+            
             list = list.Where(x => numbers.Contains(x[0].ToString())).ToList();
             
             List<BattingSummary> dataList = new List<BattingSummary>();
@@ -49,49 +48,70 @@ namespace ConsoleApp
                 outputFile.WriteLine(sb.ToString());
             }
         }
-
+        
         private static StringBuilder CreateInsertScript(List<BattingSummary> dataList)
         {
             var sb = new StringBuilder();
-            var tableName = "Batting.Summary";
+            var statsTableName = "\"Summary\".\"Batting\"";
+            var playerTableName = "\"Players\".\"Details\"";
+            var count = 1;
             
-            foreach (var data in dataList)
+            foreach (var d in dataList)
             {
-                sb.Append(CreateInsertStatement(data, tableName));
+                sb.Append(CreatePlayerInsertStatement(count, d.PlayerName, playerTableName));
+                sb.Append(CreateStatsInsertStatement(count, d, statsTableName, FormatHighScore(d.HighScore)));
+                count += 1;
             }
-
+            
             return sb;
         }
-
-        private static string CreateInsertStatement(BattingSummary d, string tableName)
+        
+        private static string CreateStatsInsertStatement(int playerId, BattingSummary d, string tableName, 
+            Tuple<int, int> hs)
         {
-            string test =  $@"
-INSERT INTO {tableName} VALUES ('{d.PlayerName}', {d.Matches}, {d.Innings}, {d.Average}) 
-{System.Environment.NewLine}";
-
-            return test;
+            return $@"
+INSERT INTO {tableName} VALUES ({playerId}, {d.Matches}, {d.Innings}, {d.NotOuts}, {d.Runs}, {hs.Item1}, 
+{d.Average}, {d.Fifties}, {d.Hundreds}, CAST({hs.Item2} AS BIT)); {Environment.NewLine}";
+        }
+        
+        private static string CreatePlayerInsertStatement(int playerId, string playerName, string tableName)
+        {
+            return $@"
+INSERT INTO {tableName} VALUES ({playerId}, '{playerName}'); {Environment.NewLine}";
         }
         
         private static BattingSummary ParseData(string[] args)
         {
-            decimal output;
-            Decimal.TryParse(args[7], out output);
+            Decimal.TryParse(args[7], out var average);
             
-            BattingSummary test = new BattingSummary();
+            var name = args[1]; 
+            if (name.Contains('\''))
+            {
+                name = args[1].Insert(name.IndexOf('\''), '\''.ToString());
+            }
+            
+            return new BattingSummary
+            {
+                PlayerName = name,
+                Matches = Int32.Parse(args[2]),
+                Innings = Int32.Parse(args[3]),
+                NotOuts = Int32.Parse(args[4]),
+                Runs = Int32.Parse(args[5]),
+                HighScore = args[6],
+                Average = average,
+                Fifties = Int32.Parse(args[8]),
+                Hundreds = Int32.Parse(args[9]),
+                Catches = Int32.Parse(args[10]),
+                Stumpings = Int32.Parse(args[11])
+            };
+        }
 
-            test.PlayerName = args[1];
-            test.Matches = Int32.Parse(args[2]);
-            test.Innings = Int32.Parse(args[3]);
-            test.NotOuts = Int32.Parse(args[4]);
-            test.Runs = Int32.Parse(args[5]);
-            test.HighScore = args[6];
-            test.Average = output;
-            test.Fifties = Int32.Parse(args[8]);
-            test.Hundereds = Int32.Parse(args[9]);
-            test.Catches = Int32.Parse(args[10]);
-            test.Stumpings = Int32.Parse(args[11]);
+        private static Tuple<int, int> FormatHighScore(string highScore)
+        {
+            var notOut = highScore.Contains('*') ? 1 : 0;
+            var score = Int32.Parse(highScore.Replace('*', ' '));
             
-            return test;
+            return new Tuple<int, int>(score, notOut);
         }
     }
 }
