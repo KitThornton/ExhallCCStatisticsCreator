@@ -39,6 +39,9 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Entities\BattingSummary.cs" />
+        <Compile Include="Entities\BowlingSummary.cs" />
+        <Compile Include="Logic\BatSummary.cs" />
+        <Compile Include="Logic\BowlSummary.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
