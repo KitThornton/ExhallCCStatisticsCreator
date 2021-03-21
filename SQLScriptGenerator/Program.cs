@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -16,7 +15,7 @@ namespace SQLScriptGenerator
             string inputFilePath = "./BattingSummary.csv";
             string outputFilePath = "./SQLScript.txt";
             
-            var sb = GenerateBattingSummaryScript(inputFilePath, outputFilePath);
+            var sb = GenerateBattingSummaryScript(inputFilePath);
             
             using (StreamWriter outputFile = new StreamWriter(outputFilePath))
             {
@@ -24,7 +23,7 @@ namespace SQLScriptGenerator
             }
         }
         
-        private static StringBuilder GenerateBattingSummaryScript(string inputFilePath, string outputFilePath)
+        private static StringBuilder GenerateBattingSummaryScript(string inputFilePath)
         {
             var reader = new StreamReader(File.OpenRead(inputFilePath));
             List<string> list = new List<string>();
