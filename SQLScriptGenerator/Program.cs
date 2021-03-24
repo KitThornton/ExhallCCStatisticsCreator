@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -12,18 +14,44 @@ namespace SQLScriptGenerator
     {
         public static void Main(string[] args)
         {
-            string inputFilePath = "./BattingSummary.csv";
+            string fileType = "bowlingSummary";
+            string inputFilePath;
             string outputFilePath = "./SQLScript.txt";
+            StringBuilder sb = new StringBuilder();
             
-            var sb = GenerateBattingSummaryScript(inputFilePath);
+            switch (fileType)
+            {
+                case "battingSummary":
+                     inputFilePath = "./BattingSummary.csv";
+                    break;
+                case "bowlingSummary":
+                    inputFilePath = "./BowlingSummary.csv";
+                    break;
+                default:
+                    throw new Exception("invalid file type");
+            }
+            
+            var data = PrepareData(inputFilePath);
+            
+            switch (fileType)
+            {
+                case "battingSummary":
+                    sb = GenerateBattingSummaryScript(data);
+                    break;
+                case "bowlingSummary":
+                    sb = GenerateBowlingSummaryScript(data);
+                    break;
+                default:
+                    throw new Exception("invalid file type");
+            }
             
             using (StreamWriter outputFile = new StreamWriter(outputFilePath))
             {
                 outputFile.WriteLine(sb.ToString());
             }
         }
-        
-        private static StringBuilder GenerateBattingSummaryScript(string inputFilePath)
+
+        private static List<string> PrepareData(string inputFilePath)
         {
             var reader = new StreamReader(File.OpenRead(inputFilePath));
             List<string> list = new List<string>();
@@ -38,10 +66,14 @@ namespace SQLScriptGenerator
             }
             
             // Filter out bad rows
-            list = list.Where(x => numbers.Contains(x[0].ToString())).ToList();
+            return list.Where(x => numbers.Contains(x[0].ToString())).ToList();
+        }
+        
+        private static StringBuilder GenerateBattingSummaryScript(List<string> data)
+        {
             List<BattingSummary> dataList = new List<BattingSummary>();
             
-            foreach (var line in list)
+            foreach (var line in data)
             {
                 var test = line.Split(',');
                 dataList.Add(BatSummary.ParseData(test));
@@ -49,6 +81,20 @@ namespace SQLScriptGenerator
             
             // Here we need to then create the insert statements
             return BatSummary.CreateInsertScript(dataList);
+        }
+
+        private static StringBuilder GenerateBowlingSummaryScript(List<string> data)
+        {
+            List<BowlingSummary> dataList = new List<BowlingSummary>();
+            
+            foreach (var line in data)
+            {
+                var test = line.Split(',');
+                dataList.Add(BowlSummary.ParseData(test));
+            }
+            
+            // Here we need to then create the insert statements
+            return BowlSummary.CreateInsertScript(dataList);
         }
     }
 }
