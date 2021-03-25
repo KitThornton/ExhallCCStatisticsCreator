@@ -12,17 +12,22 @@ namespace SQLScriptGenerator.Logic
         {
             var sb = new StringBuilder();
             var statsTableName = "\"Summary\".\"Bowling\"";
+            var playersTableName = "\"Players\".\"Details\"";
             
-            // Here we assume that the players table has already been created
-            // TODO: We should add in a MERGE statement to add in data to the 
-            // players table of an entry does not exist.
             foreach (var d in dataList)
             {
-                
+                sb.Append(CreatePlayerInsertStatement(d.PlayerName, playersTableName));
                 sb.Append(CreateStatsInsertStatement(d, statsTableName));
             }
             
             return sb;
+        }
+        
+        private static string CreatePlayerInsertStatement(string playerName, string tableName)
+        {
+            return $@"
+INSERT INTO {tableName} VALUES ('{playerName}')
+ON CONFLICT DO NOTHING; {Environment.NewLine}";
         }
 
         public static string CreateStatsInsertStatement(BowlingSummary d, string tableName)
@@ -31,12 +36,12 @@ namespace SQLScriptGenerator.Logic
 INSERT INTO {tableName} (""PlayerId"", ""Matches"", ""Overs"", ""Runs"", ""Wickets"",
                 ""FiveWicketHauls"", ""BestFigsRuns"", ""BestFigsWickets"",
                 ""Economy"", ""Average"")
-SELECT PlayerID, {d.Matches}, {d.Overs}, {d.Runs}, {d.Wickets}, {d.FiveWicketHauls}, {d.BestFigures.Runs}, 
+SELECT ""PlayerId"", {d.Matches}, {d.Overs}, {d.Runs}, {d.Wickets}, {d.FiveWicketHauls}, {d.BestFigures.Runs}, 
             {d.BestFigures.Wickets}, {d.Economy}, {d.Average}
 FROM ""Players"".""Details""
-WHERE playername = '{d.PlayerName}'; {Environment.NewLine}";
+WHERE ""PlayerName"" = '{d.PlayerName}'; {Environment.NewLine}";
         }
-        
+
         public static BowlingSummary ParseData(string[] args)
         {
             Decimal.TryParse(args[6], out var average);

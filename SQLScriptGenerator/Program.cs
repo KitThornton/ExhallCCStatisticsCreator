@@ -14,7 +14,7 @@ namespace SQLScriptGenerator
     {
         public static void Main(string[] args)
         {
-            string fileType = "bowlingSummary";
+            string fileType = "battingSummary";
             string inputFilePath;
             string outputFilePath = "./SQLScript.txt";
             StringBuilder sb = new StringBuilder();

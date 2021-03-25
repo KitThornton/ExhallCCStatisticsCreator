@@ -11,32 +11,44 @@ namespace SQLScriptGenerator.Logic
         public static StringBuilder CreateInsertScript(List<BattingSummary> dataList)
         {
             var sb = new StringBuilder();
-            var statsTableName = "\"Summary\".\"Batting\"";
+            var battingTableName = "\"Summary\".\"Batting\"";
             var playerTableName = "\"Players\".\"Details\"";
-            var count = 1;
+            var fieldingTableName = "\"Summary\".\"Fielding\"";
 
             foreach (var d in dataList)
             {
-                sb.Append(CreatePlayerInsertStatement(count, d.PlayerName, playerTableName));
-                sb.Append(CreateStatsInsertStatement(count, d, statsTableName, FormatHighScore(d.HighScore)));
-                count += 1;
+                // sb.Append(CreatePlayerInsertStatement(d.PlayerName, playerTableName));
+                // sb.Append(CreateStatsInsertStatement(battingTableName, d, FormatHighScore(d.HighScore)));
+                sb.Append(CreateFieldingStatsInsertStatement(fieldingTableName, d));
             }
 
             return sb;
         }
 
-        public static string CreateStatsInsertStatement(int playerId, BattingSummary d, string tableName,
-            Tuple<int, int> hs)
+        public static string CreateStatsInsertStatement(string tableName, BattingSummary d, Tuple<int, int> hs)
         {
             return $@"
-INSERT INTO {tableName} VALUES ({playerId}, {d.Matches}, {d.Innings}, {d.NotOuts}, {d.Runs}, {hs.Item1}, 
-{d.Average}, {d.Fifties}, {d.Hundreds}, CAST({hs.Item2} AS BIT)); {Environment.NewLine}";
+INSERT INTO {tableName} (PlayerId, Matches, innings, notouts, runs, highscore, average, fifties, hundreds, 
+highscorenotout)
+SELECT ""PlayerId"", {d.Matches}, {d.Innings}, {d.NotOuts}, {d.Runs}, {hs.Item1}, {d.Average}, {d.Fifties}, 
+{d.Hundreds}, CAST({hs.Item2} AS BIT)
+FROM ""Players"".""Details""
+WHERE ""PlayerName"" = '{d.PlayerName}'; {Environment.NewLine}";}
+        
+        private static string CreatePlayerInsertStatement(string playerName, string tableName)
+        {
+            return $@"
+INSERT INTO {tableName} (""PlayerName"") VALUES ('{playerName}')
+ON CONFLICT DO NOTHING; {Environment.NewLine}";
         }
-
-        private static string CreatePlayerInsertStatement(int playerId, string playerName, string tableName)
+        
+        public static string CreateFieldingStatsInsertStatement(string tableName, BattingSummary d)
         {
             return $@"
-INSERT INTO {tableName} VALUES ({playerId}, '{playerName}'); {Environment.NewLine}";
+INSERT INTO {tableName} (""PlayerId"", ""Catches"", ""Stumpings"")
+SELECT ""PlayerId"", {d.Catches}, {d.Stumpings}
+FROM ""Players"".""Details""
+WHERE ""PlayerName"" = '{d.PlayerName}'; {Environment.NewLine}";
         }
 
         public static BattingSummary ParseData(string[] args)
