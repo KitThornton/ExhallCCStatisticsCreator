@@ -17,8 +17,8 @@ namespace SQLScriptGenerator.Logic
 
             foreach (var d in dataList)
             {
-                // sb.Append(CreatePlayerInsertStatement(d.PlayerName, playerTableName));
-                // sb.Append(CreateStatsInsertStatement(battingTableName, d, FormatHighScore(d.HighScore)));
+                sb.Append(CreatePlayerInsertStatement(d.PlayerName, playerTableName));
+                sb.Append(CreateStatsInsertStatement(battingTableName, d, FormatHighScore(d.HighScore)));
                 sb.Append(CreateFieldingStatsInsertStatement(fieldingTableName, d));
             }
 
@@ -50,7 +50,7 @@ SELECT ""PlayerId"", {d.Catches}, {d.Stumpings}
 FROM ""Players"".""Details""
 WHERE ""PlayerName"" = '{d.PlayerName}'; {Environment.NewLine}";
         }
-
+        
         public static BattingSummary ParseData(string[] args)
         {
             Decimal.TryParse(args[7], out var average);
