@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Entities;
 
 namespace SQLScriptGenerator.Logic
 {
@@ -54,6 +55,16 @@ namespace SQLScriptGenerator.Logic
             if (enumerable1.Contains(data)) return false;
             
             return true;
+        }
+        
+        public static BestBowlingFigures FormatBestFigures(string figures)
+        {
+            var figs = figures.Split('-');
+            return new BestBowlingFigures
+            {
+                Wickets = Int32.Parse(figs[0]),
+                Runs = Int32.Parse(figs[1])
+            };
         }
     }
 }

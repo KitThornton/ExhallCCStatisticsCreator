@@ -8,7 +8,6 @@ namespace SQLScriptGenerator.Logic
 {
     public class CareerSummary
     {
-        
         public static StringBuilder GenerateCareerSummaryScript(List<string> data)
         {
             List<BattingSeason> battingSeasons = new List<BattingSeason>();
@@ -26,13 +25,14 @@ namespace SQLScriptGenerator.Logic
                 var bowl = test.Take(1).Skip(9).Take(7).ToList();
                 
                 // Separate line into bowling and batting
-                battingSeasons.Add(CareerSummary.ParseBattingData(playerName, bat));
-                bowlingSeasons.Add(CareerSummary.ParseBowlingData(playerName, bowl));
+                battingSeasons.Add(ParseBattingData(playerName, bat));
+                bowlingSeasons.Add(ParseBowlingData(playerName, bowl));
             }
             
-            return CareerSummary.CreateInsertScript(battingSeasons, bowlingSeasons);
+            return CreateInsertScript(battingSeasons, bowlingSeasons);
         }
         
+        // TODO
         public static BattingSeason ParseBattingData(string name, List<string> args)
         {
             Decimal.TryParse(args[7], out var average);
@@ -56,6 +56,7 @@ namespace SQLScriptGenerator.Logic
             };
         }
         
+        // TODO
         public static BowlingSeason ParseBowlingData(string name, List<string> args)
         {
             Decimal.TryParse(args[7], out var average);
@@ -73,20 +74,11 @@ namespace SQLScriptGenerator.Logic
                 Runs = Int32.Parse(args[5]),
                 Wickets = Int32.Parse(args[5]),
                 Average = average,
-                BestFigures = FormatBestFigures(args[8]),
-            };
-        }
-        
-        private static BestBowlFigs FormatBestFigures(string figures)
-        {
-            var figs = figures.Split('-');
-            return new BestBowlFigs
-            {
-                Wickets = Int32.Parse(figs[0]),
-                Runs = Int32.Parse(figs[1])
+                BestFigures = Tools.FormatBestFigures(args[8]),
             };
         }
 
+        // TODO
         public static StringBuilder CreateInsertScript(List<BattingSeason> battingSeasons, 
             List<BowlingSeason> bowlingSeasons)
         {

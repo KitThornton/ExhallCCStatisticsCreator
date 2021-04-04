@@ -74,7 +74,7 @@ WHERE ""PlayerName"" = '{d.PlayerName}'; {Environment.NewLine}";
             {
                 name = args[1].Insert(name.IndexOf('\''), '\''.ToString());
             }
-
+            
             return new BattingSummary
             {
                 PlayerName = name,

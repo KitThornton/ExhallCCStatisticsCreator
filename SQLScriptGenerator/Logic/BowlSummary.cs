@@ -82,10 +82,10 @@ WHERE ""PlayerName"" = '{d.PlayerName}'; {Environment.NewLine}";
             return sum;
         }
 
-        private static BowlingSummary.BestBowlFigs FormatBestFigures(string figures)
+        private static BestBowlingFigures FormatBestFigures(string figures)
         {
             var figs = figures.Split('-');
-            return new BowlingSummary.BestBowlFigs
+            return new BestBowlingFigures
             {
                 Wickets = Int32.Parse(figs[0]),
                 Runs = Int32.Parse(figs[1])

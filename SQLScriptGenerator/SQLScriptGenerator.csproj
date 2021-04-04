@@ -40,6 +40,7 @@
     <ItemGroup>
         <Compile Include="Entities\BattingSeason.cs" />
         <Compile Include="Entities\BattingSummary.cs" />
+        <Compile Include="Entities\BestBowlingFigures.cs" />
         <Compile Include="Entities\BowlingSeason.cs" />
         <Compile Include="Entities\BowlingSummary.cs" />
         <Compile Include="Logic\BatSummary.cs" />
