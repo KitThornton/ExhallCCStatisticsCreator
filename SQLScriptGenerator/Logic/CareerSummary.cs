@@ -8,6 +8,31 @@ namespace SQLScriptGenerator.Logic
 {
     public class CareerSummary
     {
+        
+        public static StringBuilder GenerateCareerSummaryScript(List<string> data)
+        {
+            List<BattingSeason> battingSeasons = new List<BattingSeason>();
+            List<BowlingSeason> bowlingSeasons = new List<BowlingSeason>();
+            string playerName = String.Empty;
+            
+            foreach (var line in data)
+            {
+                var test = line.Split(',');
+
+                if (Tools.CheckNamePresent(test[0])) playerName = line[0].ToString();
+                
+                // Isolate batting and bowling data
+                var bat = test.Take(9).ToList();
+                var bowl = test.Take(1).Skip(9).Take(7).ToList();
+                
+                // Separate line into bowling and batting
+                battingSeasons.Add(CareerSummary.ParseBattingData(playerName, bat));
+                bowlingSeasons.Add(CareerSummary.ParseBowlingData(playerName, bowl));
+            }
+            
+            return CareerSummary.CreateInsertScript(battingSeasons, bowlingSeasons);
+        }
+        
         public static BattingSeason ParseBattingData(string name, List<string> args)
         {
             Decimal.TryParse(args[7], out var average);

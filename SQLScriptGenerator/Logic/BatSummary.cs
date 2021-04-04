@@ -8,6 +8,20 @@ namespace SQLScriptGenerator.Logic
 {
     public class BatSummary
     {
+        public static StringBuilder GenerateBattingSummaryScript(List<string> data)
+        {
+            List<BattingSummary> dataList = new List<BattingSummary>();
+            
+            foreach (var line in data)
+            {
+                var test = line.Split(',');
+                dataList.Add(BatSummary.ParseData(test));
+            }
+            
+            // Here we need to then create the insert statements
+            return BatSummary.CreateInsertScript(dataList);
+        }
+        
         public static StringBuilder CreateInsertScript(List<BattingSummary> dataList)
         {
             var sb = new StringBuilder();

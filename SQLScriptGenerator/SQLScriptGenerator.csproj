@@ -45,6 +45,7 @@
         <Compile Include="Logic\BatSummary.cs" />
         <Compile Include="Logic\BowlSummary.cs" />
         <Compile Include="Logic\CareerSummary.cs" />
+        <Compile Include="Logic\Tools.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>

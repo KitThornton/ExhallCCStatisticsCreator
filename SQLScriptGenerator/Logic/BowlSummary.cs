@@ -8,6 +8,20 @@ namespace SQLScriptGenerator.Logic
 {
     public class BowlSummary
     {
+        public static StringBuilder GenerateBowlingSummaryScript(List<string> data)
+        {
+            List<BowlingSummary> dataList = new List<BowlingSummary>();
+            
+            foreach (var line in data)
+            {
+                var test = line.Split(',');
+                dataList.Add(BowlSummary.ParseData(test));
+            }
+            
+            // Here we need to then create the insert statements
+            return BowlSummary.CreateInsertScript(dataList);
+        }
+        
         public static StringBuilder CreateInsertScript(List<BowlingSummary> dataList)
         {
             var sb = new StringBuilder();
