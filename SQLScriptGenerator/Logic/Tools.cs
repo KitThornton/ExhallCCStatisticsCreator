@@ -21,7 +21,7 @@ namespace SQLScriptGenerator.Logic
             }
             
             // Filter out bad rows
-            return list.Where(x => !string.IsNullOrEmpty(x)).ToList();
+            return list.Where(x => !(x.StartsWith(",") || x.StartsWith("Year") )).ToList();
         }
         
         public static List<string> PrepareData(string inputFilePath)
@@ -49,22 +49,48 @@ namespace SQLScriptGenerator.Logic
                 .Range(0, 10)
                 .Select(i => i.ToString(CultureInfo.InvariantCulture));
             
-            var enumerable1 = numbers.ToList();
-            enumerable1.AddRange(new List<string>(){"Year", "Total"});
-            
-            if (enumerable1.Contains(data)) return false;
-            
+            var defaults = new List<string>() {"Year", "Total"};
+
+            if (defaults.Contains(data) || numbers.Contains(data.First().ToString())) return false;
+
             return true;
         }
         
         public static BestBowlingFigures FormatBestFigures(string figures)
         {
+            if (string.IsNullOrEmpty(figures)) return new BestBowlingFigures();
+            
             var figs = figures.Split('-');
             return new BestBowlingFigures
             {
                 Wickets = Int32.Parse(figs[0]),
                 Runs = Int32.Parse(figs[1])
             };
+        }
+
+        public static decimal? FormatAverage(string average)
+        {
+            decimal? av;
+            if (average.Equals("#DIV/0!"))
+            {
+                av = null;
+            }
+            else
+            {
+                av = Decimal.Parse(average);    
+            }
+
+            return av;
+        }
+
+        public static string FormatPlayerName(string name)
+        {
+            if (name.Contains('\''))
+            {
+                name = name.Insert(name.IndexOf('\''), '\''.ToString());
+            }
+
+            return name;
         }
     }
 }
