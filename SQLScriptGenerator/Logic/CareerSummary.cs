@@ -58,7 +58,7 @@ namespace SQLScriptGenerator.Logic
                 Innings = Convert.ToInt32(args[2]),
                 NotOuts = Convert.ToInt32(args[3]),
                 Runs = Convert.ToInt32(args[4]),
-                HighScore = args[5],
+                HighScore = Tools.FormatHighScore(args[5]),
                 Average = average,
                 Fifties = Convert.ToInt32(args[7]),
                 Hundreds = Convert.ToInt32(args[8])
@@ -92,26 +92,33 @@ namespace SQLScriptGenerator.Logic
             List<BowlingSeason> bowlingSeasons)
         {
             var sb = new StringBuilder();
+            var battingTable = "Summary.BattingSeason";
+            var bowlingTable = "Summary.BowlingSeason";
 
             foreach (var item in battingSeasons)
             {
-                sb.Append(CreateBattingScript(item));
+                sb.Append(CreateBattingScript(battingTable, item));
             }
 
             foreach (var item in bowlingSeasons)
             {
-                sb.Append(CreateBowlingScript(item));
+                sb.Append(CreateBowlingScript(bowlingTable, item));
             }
             
             return sb;
         }
 
-        public static string CreateBattingScript(BattingSeason battingSeason)
+        public static string CreateBattingScript(string tableName, BattingSeason d)
         {
-            return string.Empty;
+            return $@"
+INSERT INTO {tableName} (PlayerId, Year, Matches, Innings, NotOuts, Runs, HighScore, HighScoreNotOut, Fifties, Hundreds)
+SELECT ""PlayerId"", {d.Year}, {d.Matches}, {d.Innings}, {d.NotOuts}, {d.Runs}, {d.HighScore.Runs}, {d.HighScore.NotOut}, 
+{d.Fifties}, {d.Hundreds})
+FROM ""Players"".""Details""
+WHERE ""PlayerName"" = '{d.PlayerName}'; {Environment.NewLine}";
         }
         
-        public static string CreateBowlingScript(BowlingSeason bowlingSeason)
+        public static string CreateBowlingScript(string tableName, BowlingSeason bowlingSeason)
         {
             return string.Empty;
         }

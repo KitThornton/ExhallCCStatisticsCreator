@@ -43,6 +43,7 @@
         <Compile Include="Entities\BestBowlingFigures.cs" />
         <Compile Include="Entities\BowlingSeason.cs" />
         <Compile Include="Entities\BowlingSummary.cs" />
+        <Compile Include="Entities\HighScore.cs" />
         <Compile Include="Logic\BatSummary.cs" />
         <Compile Include="Logic\BowlSummary.cs" />
         <Compile Include="Logic\CareerSummary.cs" />

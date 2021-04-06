@@ -71,15 +71,7 @@ namespace SQLScriptGenerator.Logic
         public static decimal? FormatAverage(string average)
         {
             decimal? av;
-            if (average.Equals("#DIV/0!"))
-            {
-                av = null;
-            }
-            else
-            {
-                av = Decimal.Parse(average);    
-            }
-
+            av = average.Equals("#DIV/0!") ? (decimal?) null : Decimal.Parse(average);
             return av;
         }
 
@@ -91,6 +83,15 @@ namespace SQLScriptGenerator.Logic
             }
 
             return name;
+        }
+
+        public static HighScore FormatHighScore(string score)
+        {
+            
+            Boolean notOut = score.Contains('*');
+            var runs = Int32.Parse(score.Replace('*', ' '));
+
+            return new HighScore{ NotOut = notOut, Runs = runs};
         }
     }
 }
