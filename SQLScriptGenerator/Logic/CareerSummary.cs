@@ -14,6 +14,7 @@ namespace SQLScriptGenerator.Logic
             List<BowlingSeason> bowlingSeasons = new List<BowlingSeason>();
             string playerName = String.Empty;
             string year = String.Empty;
+            List<string> playerNames = new List<string>();
             
             foreach (var line in data)
             {
@@ -22,7 +23,7 @@ namespace SQLScriptGenerator.Logic
                 if (Tools.CheckNamePresent(test[0]))
                 {
                     playerName = Tools.FormatPlayerName(test[0]);
-                    
+                    playerNames.Add(playerName);
                     continue;
                 }
 
@@ -42,10 +43,9 @@ namespace SQLScriptGenerator.Logic
                 bowlingSeasons.Add(ParseBowlingData(year, playerName, bowl));
             }
             
-            return CreateInsertScript(battingSeasons, bowlingSeasons);
+            return CreateInsertScript(playerNames, battingSeasons, bowlingSeasons);
         }
         
-        // TODO
         public static BattingSeason ParseBattingData(string year, string name, List<string> args)
         {
             var average = Tools.FormatAverage(args[6]);
@@ -88,27 +88,22 @@ namespace SQLScriptGenerator.Logic
         }
         
         // TODO
-        public static StringBuilder CreateInsertScript(List<BattingSeason> battingSeasons, 
+        public static StringBuilder CreateInsertScript(List<string> playerNames, List<BattingSeason> battingSeasons, 
             List<BowlingSeason> bowlingSeasons)
         {
             var sb = new StringBuilder();
+            var playerDetailsTable = "Players.Details";
             var battingTable = "Summary.BattingSeason";
             var bowlingTable = "Summary.BowlingSeason";
-
-            foreach (var item in battingSeasons)
-            {
-                sb.Append(CreateBattingScript(battingTable, item));
-            }
-
-            foreach (var item in bowlingSeasons)
-            {
-                sb.Append(CreateBowlingScript(bowlingTable, item));
-            }
+            
+            playerNames.ForEach(x => sb.Append(Tools.CreatePlayerInsertStatement(x, playerDetailsTable)));
+            battingSeasons.ForEach(x => sb.Append(CreateBattingScript(x, battingTable)));
+            bowlingSeasons.ForEach(x => sb.Append(CreateBowlingScript(x, bowlingTable)));
             
             return sb;
         }
 
-        public static string CreateBattingScript(string tableName, BattingSeason d)
+        private static string CreateBattingScript(BattingSeason d, string tableName)
         {
             return $@"
 INSERT INTO {tableName} (PlayerId, Year, Matches, Innings, NotOuts, Runs, HighScore, HighScoreNotOut, Fifties, Hundreds)
@@ -118,9 +113,14 @@ FROM ""Players"".""Details""
 WHERE ""PlayerName"" = '{d.PlayerName}'; {Environment.NewLine}";
         }
         
-        public static string CreateBowlingScript(string tableName, BowlingSeason bowlingSeason)
+        private static string CreateBowlingScript(BowlingSeason d, string tableName)
         {
-            return string.Empty;
+            return $@"
+INSERT INTO {tableName} (PlayerId, Year, Overs, Maidens, Wickets, Runs, Average, FiveWicketHauls, BestFigsRuns, BestFigsWickets)
+SELECT ""PlayerId"", {d.Year}, {d.Overs}, {d.Maidens}, {d.Wickets}, {d.Runs}, {d.Average}, {d.FiveWicketHauls}, 
+{d.BestFigures.Runs}, {d.BestFigures.Wickets})
+FROM ""Players"".""Details""
+WHERE ""PlayerName"" = '{d.PlayerName}'; {Environment.NewLine}";
         }
     }
 }

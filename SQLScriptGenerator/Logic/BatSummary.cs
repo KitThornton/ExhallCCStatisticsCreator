@@ -31,7 +31,7 @@ namespace SQLScriptGenerator.Logic
 
             foreach (var d in dataList)
             {
-                sb.Append(CreatePlayerInsertStatement(d.PlayerName, playerTableName));
+                sb.Append(Tools.CreatePlayerInsertStatement(d.PlayerName, playerTableName));
                 sb.Append(CreateStatsInsertStatement(battingTableName, d));
                 sb.Append(CreateFieldingStatsInsertStatement(fieldingTableName, d));
             }
@@ -48,14 +48,7 @@ SELECT ""PlayerId"", {d.Matches}, {d.Innings}, {d.NotOuts}, {d.Runs}, {d.HighSco
 {d.Hundreds}, CAST({Convert.ToInt16(d.HighScore.NotOut)} AS BIT)
 FROM ""Players"".""Details""
 WHERE ""PlayerName"" = '{d.PlayerName}'; {Environment.NewLine}";}
-        
-        private static string CreatePlayerInsertStatement(string playerName, string tableName)
-        {
-            return $@"
-INSERT INTO {tableName} (""PlayerName"") VALUES ('{playerName}')
-ON CONFLICT DO NOTHING; {Environment.NewLine}";
-        }
-        
+
         public static string CreateFieldingStatsInsertStatement(string tableName, BattingSummary d)
         {
             return $@"
@@ -68,12 +61,8 @@ WHERE ""PlayerName"" = '{d.PlayerName}'; {Environment.NewLine}";
         public static BattingSummary ParseData(string[] args)
         {
             Decimal.TryParse(args[7], out var average);
-
-            var name = args[1];
-            if (name.Contains('\''))
-            {
-                name = args[1].Insert(name.IndexOf('\''), '\''.ToString());
-            }
+            
+            var name = Tools.FormatPlayerName(args[1]);
             
             return new BattingSummary
             {

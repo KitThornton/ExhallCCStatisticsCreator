@@ -93,5 +93,12 @@ namespace SQLScriptGenerator.Logic
 
             return new HighScore{ NotOut = notOut, Runs = runs};
         }
+        
+        public static string CreatePlayerInsertStatement(string playerName, string tableName)
+        {
+            return $@"
+INSERT INTO {tableName} (""PlayerName"") VALUES ('{playerName}')
+ON CONFLICT DO NOTHING; {Environment.NewLine}";
+        }
     }
 }
