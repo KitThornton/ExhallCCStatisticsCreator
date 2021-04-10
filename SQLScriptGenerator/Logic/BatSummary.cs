@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Entities;
 
@@ -19,15 +18,15 @@ namespace SQLScriptGenerator.Logic
             }
             
             // Here we need to then create the insert statements
-            return BatSummary.CreateInsertScript(dataList);
+            return CreateInsertScript(dataList);
         }
         
         public static StringBuilder CreateInsertScript(List<BattingSummary> dataList)
         {
             var sb = new StringBuilder();
-            var battingTableName = "\"Summary\".\"Batting\"";
-            var playerTableName = "\"Players\".\"Details\"";
-            var fieldingTableName = "\"Summary\".\"Fielding\"";
+            var battingTableName = "Summary.Batting";
+            var playerTableName = "Players.Details";
+            var fieldingTableName = "Summary.Fielding";
 
             foreach (var d in dataList)
             {
@@ -42,20 +41,18 @@ namespace SQLScriptGenerator.Logic
         public static string CreateStatsInsertStatement(string tableName, BattingSummary d)
         {
             return $@"
-INSERT INTO {tableName} (PlayerId, Matches, innings, notouts, runs, highscore, average, fifties, hundreds, 
-highscorenotout)
-SELECT ""PlayerId"", {d.Matches}, {d.Innings}, {d.NotOuts}, {d.Runs}, {d.HighScore.Runs}, {d.Average}, {d.Fifties}, 
-{d.Hundreds}, CAST({Convert.ToInt16(d.HighScore.NotOut)} AS BIT)
-FROM ""Players"".""Details""
-WHERE ""PlayerName"" = '{d.PlayerName}'; {Environment.NewLine}";}
+INSERT INTO {tableName} (PlayerId, Matches, innings, notouts, runs, average, fifties, hundreds, highscore, highscorenotout)
+SELECT PlayerId, {d.Matches}, {d.Innings}, {d.NotOuts}, {d.Runs}, {d.Average}, {d.Fifties}, {d.Hundreds}, {Tools.FormatHighScore(d.HighScore)}
+FROM Players.Details
+WHERE PlayerName = '{d.PlayerName}'; {Environment.NewLine}";}
 
         public static string CreateFieldingStatsInsertStatement(string tableName, BattingSummary d)
         {
             return $@"
 INSERT INTO {tableName} (""PlayerId"", ""Catches"", ""Stumpings"")
-SELECT ""PlayerId"", {d.Catches}, {d.Stumpings}
-FROM ""Players"".""Details""
-WHERE ""PlayerName"" = '{d.PlayerName}'; {Environment.NewLine}";
+SELECT PlayerId, {d.Catches}, {d.Stumpings}
+FROM Players.Details
+WHERE PlayerName = '{d.PlayerName}'; {Environment.NewLine}";
         }
         
         public static BattingSummary ParseData(string[] args)

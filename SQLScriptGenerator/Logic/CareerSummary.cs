@@ -69,8 +69,6 @@ namespace SQLScriptGenerator.Logic
         {
             // Just set these to 0?
             var average = Tools.FormatAverage(args[4]);
-            
-            // string.IsNullOrEmpty(args[5]) ? (int?) null : Convert.ToInt32(args[5]),
             Int32.TryParse(args[5], out var fiveWh);
             
             return new BowlingSeason
@@ -102,25 +100,23 @@ namespace SQLScriptGenerator.Logic
             
             return sb;
         }
-
+        
         private static string CreateBattingScript(BattingSeason d, string tableName)
         {
             return $@"
-INSERT INTO {tableName} (PlayerId, Year, Matches, Innings, NotOuts, Runs, HighScore, HighScoreNotOut, Fifties, Hundreds)
-SELECT ""PlayerId"", {d.Year}, {d.Matches}, {d.Innings}, {d.NotOuts}, {d.Runs}, {d.HighScore.Runs}, {d.HighScore.NotOut}, 
-{d.Fifties}, {d.Hundreds})
-FROM ""Players"".""Details""
-WHERE ""PlayerName"" = '{d.PlayerName}'; {Environment.NewLine}";
+INSERT INTO {tableName} (PlayerId, Year, Matches, Innings, NotOuts, Runs, Fifties, Hundreds, HighScore, HighScoreNotOut)
+SELECT (PlayerId, {Tools.FormatYear(d.Year)}, {d.Matches}, {d.Innings}, {d.NotOuts}, {d.Runs}, {d.Fifties}, {d.Hundreds}, {Tools.FormatHighScore(d.HighScore)})
+FROM Players.Details
+WHERE PlayerName = '{d.PlayerName}'; {Environment.NewLine}";
         }
         
         private static string CreateBowlingScript(BowlingSeason d, string tableName)
         {
             return $@"
 INSERT INTO {tableName} (PlayerId, Year, Overs, Maidens, Wickets, Runs, Average, FiveWicketHauls, BestFigsRuns, BestFigsWickets)
-SELECT ""PlayerId"", {d.Year}, {d.Overs}, {d.Maidens}, {d.Wickets}, {d.Runs}, {d.Average}, {d.FiveWicketHauls}, 
-{d.BestFigures.Runs}, {d.BestFigures.Wickets})
-FROM ""Players"".""Details""
-WHERE ""PlayerName"" = '{d.PlayerName}'; {Environment.NewLine}";
+SELECT (PlayerId, {Tools.FormatYear(d.Year)}, {d.Overs}, {d.Maidens}, {d.Wickets}, {d.Runs}, {Tools.FormatAverage(d.Average)}, {d.FiveWicketHauls}, {Tools.FormatBestFigsString(d.BestFigures)})
+FROM Players.Details
+WHERE PlayerName = '{d.PlayerName}'; {Environment.NewLine}";
         }
     }
 }

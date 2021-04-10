@@ -87,6 +87,7 @@ namespace SQLScriptGenerator.Logic
 
         public static HighScore FormatHighScore(string score)
         {
+            if (string.IsNullOrEmpty(score)) return new HighScore();
             
             Boolean notOut = score.Contains('*');
             var runs = Int32.Parse(score.Replace('*', ' '));
@@ -97,8 +98,28 @@ namespace SQLScriptGenerator.Logic
         public static string CreatePlayerInsertStatement(string playerName, string tableName)
         {
             return $@"
-INSERT INTO {tableName} (""PlayerName"") VALUES ('{playerName}')
+INSERT INTO {tableName} (PlayerName) VALUES ('{playerName}')
 ON CONFLICT DO NOTHING; {Environment.NewLine}";
+        }
+
+        public static string FormatBestFigsString(BestBowlingFigures bestBowling)
+        {
+            return bestBowling.Runs is null ? "NULL, NULL" : $@"{bestBowling.Runs}, {bestBowling.Wickets}";
+        }
+        
+        public static string FormatHighScore(HighScore highScore)
+        {
+            return highScore.Runs is null ? "NULL, NULL" : $@"{highScore.Runs}, CAST({Convert.ToInt16(highScore.NotOut)} AS BIT)";
+        }
+        
+        public static string FormatAverage(decimal? average)
+        {
+            return average is null ? "NULL" : $@"{average}";
+        }
+
+        public static string FormatYear(string year)
+        {
+            return year.Equals("total", StringComparison.InvariantCultureIgnoreCase) ? "NULL" : $"{year}";
         }
     }
 }

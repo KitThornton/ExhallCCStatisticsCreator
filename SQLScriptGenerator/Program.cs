@@ -10,7 +10,7 @@ namespace SQLScriptGenerator
     {
         public static void Main(string[] args)
         {
-            string fileType = "careerAverages";
+            string fileType = "battingSummary";
             string inputFilePath;
             string outputFilePath = "./SQLScript.txt";
             StringBuilder sb = new StringBuilder();

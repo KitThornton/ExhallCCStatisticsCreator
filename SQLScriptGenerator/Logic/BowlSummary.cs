@@ -25,8 +25,8 @@ namespace SQLScriptGenerator.Logic
         public static StringBuilder CreateInsertScript(List<BowlingSummary> dataList)
         {
             var sb = new StringBuilder();
-            var statsTableName = "\"Summary\".\"Bowling\"";
-            var playersTableName = "\"Players\".\"Details\"";
+            var statsTableName = "Summary.Bowling";
+            var playersTableName = "Players.Details";
             
             foreach (var d in dataList)
             {
@@ -47,13 +47,10 @@ ON CONFLICT DO NOTHING; {Environment.NewLine}";
         public static string CreateStatsInsertStatement(BowlingSummary d, string tableName)
         {
             return $@"
-INSERT INTO {tableName} (""PlayerId"", ""Matches"", ""Overs"", ""Runs"", ""Wickets"",
-                ""FiveWicketHauls"", ""BestFigsRuns"", ""BestFigsWickets"",
-                ""Economy"", ""Average"")
-SELECT ""PlayerId"", {d.Matches}, {d.Overs}, {d.Runs}, {d.Wickets}, {d.FiveWicketHauls}, {d.BestFigures.Runs}, 
-            {d.BestFigures.Wickets}, {d.Economy}, {d.Average}
-FROM ""Players"".""Details""
-WHERE ""PlayerName"" = '{d.PlayerName}'; {Environment.NewLine}";
+INSERT INTO {tableName} (PlayerId, Matches, Overs, Runs, Wickets, FiveWicketHauls, BestFigsRuns, BestFigsWickets, Economy, Average)
+SELECT PlayerId, {d.Matches}, {d.Overs}, {d.Runs}, {d.Wickets}, {d.FiveWicketHauls}, {d.BestFigures.Runs}, {d.BestFigures.Wickets}, {d.Economy}, {d.Average}
+FROM Players.Details
+WHERE PlayerName = '{d.PlayerName}'; {Environment.NewLine}";
         }
 
         public static BowlingSummary ParseData(string[] args)

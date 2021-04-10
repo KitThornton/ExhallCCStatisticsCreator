@@ -24,6 +24,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/SQLScriptGenerator/Logic/Tools.cs">
+          <value>
+            <Attribute>
+              <option name="separator" value=";" />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>
