@@ -10,7 +10,7 @@ namespace SQLScriptGenerator
     {
         public static void Main(string[] args)
         {
-            string fileType = "battingSummary";
+            string fileType = "careerAverages";
             string inputFilePath;
             string outputFilePath = "./SQLScript.txt";
             StringBuilder sb = new StringBuilder();
@@ -32,6 +32,11 @@ namespace SQLScriptGenerator
                     inputFilePath = "./CareerAverages.csv";
                     data = Tools.PrepareDataCareer(inputFilePath);
                     sb = CareerSummary.GenerateCareerSummaryScript(data);
+                    break;
+                case "awards":
+                    inputFilePath = "./awards";
+                    data = Tools.PrepareAwardsData(inputFilePath);
+                    // sb = 
                     break;
                 default:
                     throw new Exception("invalid file type");

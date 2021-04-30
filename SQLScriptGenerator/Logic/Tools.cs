@@ -41,6 +41,27 @@ namespace SQLScriptGenerator.Logic
             // Filter out bad rows
             return list.Where(x => numbers.Contains(x[0].ToString())).ToList();
         }
+
+        public static List<string> PrepareAwardsData(string inputFilePath)
+        {
+            var reader = new StreamReader(File.OpenRead(inputFilePath));
+            List<string> list = new List<string>();
+            var numbers = Enumerable
+                .Range(0, 10)
+                .Select(i => i.ToString(CultureInfo.InvariantCulture));
+
+            var test = numbers.Append("1ST");
+
+            while(!reader.EndOfStream)
+            {
+                var line = reader.ReadLine();
+                list.Add(line);
+            }
+            
+            // filter out bad rows
+            // return list.Where(x => test.Contains(x[0].ToString()) && test.Contains(x[1].ToString())).ToList();
+            return list;
+        }
         
         public static Boolean CheckNamePresent(string data)
         {

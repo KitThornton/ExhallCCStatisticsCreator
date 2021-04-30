@@ -104,8 +104,8 @@ namespace SQLScriptGenerator.Logic
         private static string CreateBattingScript(BattingSeason d, string tableName)
         {
             return $@"
-INSERT INTO {tableName} (PlayerId, Year, Matches, Innings, NotOuts, Runs, Fifties, Hundreds, HighScore, HighScoreNotOut)
-SELECT (PlayerId, {Tools.FormatYear(d.Year)}, {d.Matches}, {d.Innings}, {d.NotOuts}, {d.Runs}, {d.Fifties}, {d.Hundreds}, {Tools.FormatHighScore(d.HighScore)})
+INSERT INTO {tableName} (PlayerId, Year, Matches, Innings, NotOuts, Average, Runs, Fifties, Hundreds, HighScore, HighScoreNotOut)
+SELECT PlayerId, {Tools.FormatYear(d.Year)}, {d.Matches}, {d.Innings}, {d.NotOuts}, {Tools.FormatAverage(d.Average)}, {d.Runs}, {d.Fifties}, {d.Hundreds}, {Tools.FormatHighScore(d.HighScore)}
 FROM Players.Details
 WHERE PlayerName = '{d.PlayerName}'; {Environment.NewLine}";
         }
@@ -114,7 +114,7 @@ WHERE PlayerName = '{d.PlayerName}'; {Environment.NewLine}";
         {
             return $@"
 INSERT INTO {tableName} (PlayerId, Year, Overs, Maidens, Wickets, Runs, Average, FiveWicketHauls, BestFigsRuns, BestFigsWickets)
-SELECT (PlayerId, {Tools.FormatYear(d.Year)}, {d.Overs}, {d.Maidens}, {d.Wickets}, {d.Runs}, {Tools.FormatAverage(d.Average)}, {d.FiveWicketHauls}, {Tools.FormatBestFigsString(d.BestFigures)})
+SELECT PlayerId, {Tools.FormatYear(d.Year)}, {d.Overs}, {d.Maidens}, {d.Wickets}, {d.Runs}, {Tools.FormatAverage(d.Average)}, {d.FiveWicketHauls}, {Tools.FormatBestFigsString(d.BestFigures)}
 FROM Players.Details
 WHERE PlayerName = '{d.PlayerName}'; {Environment.NewLine}";
         }

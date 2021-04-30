@@ -19,7 +19,7 @@ namespace SQLScriptGenerator.Logic
             }
             
             // Here we need to then create the insert statements
-            return BowlSummary.CreateInsertScript(dataList);
+            return CreateInsertScript(dataList);
         }
         
         public static StringBuilder CreateInsertScript(List<BowlingSummary> dataList)

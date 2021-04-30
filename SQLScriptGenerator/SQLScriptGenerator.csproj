@@ -38,12 +38,14 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Entities\Awards.cs" />
         <Compile Include="Entities\BattingSeason.cs" />
         <Compile Include="Entities\BattingSummary.cs" />
         <Compile Include="Entities\BestBowlingFigures.cs" />
         <Compile Include="Entities\BowlingSeason.cs" />
         <Compile Include="Entities\BowlingSummary.cs" />
         <Compile Include="Entities\HighScore.cs" />
+        <Compile Include="Logic\Awards.cs" />
         <Compile Include="Logic\BatSummary.cs" />
         <Compile Include="Logic\BowlSummary.cs" />
         <Compile Include="Logic\CareerSummary.cs" />
