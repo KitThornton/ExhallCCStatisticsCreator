@@ -12,6 +12,7 @@ namespace SQLScriptGenerator.Logic
         {
             List<BattingSeason> battingSeasons = new List<BattingSeason>();
             List<BowlingSeason> bowlingSeasons = new List<BowlingSeason>();
+            List<FieldingSeason> fieldingSeasons = new List<FieldingSeason>();
             string playerName = String.Empty;
             string year = String.Empty;
             List<string> playerNames = new List<string>();
@@ -36,14 +37,16 @@ namespace SQLScriptGenerator.Logic
                 if (!r.Any()) continue;
                 
                 var bat = test.Take(9).ToList();
+                var field = test.Skip(9).Take(2).ToList();
                 var bowl = test.Skip(12).Take(7).Select(x => x).ToList();
                 
                 // Separate line into bowling and batting
                 battingSeasons.Add(ParseBattingData(year, playerName, bat));
+                fieldingSeasons.Add(ParseFieldingData(year, playerName, field));
                 bowlingSeasons.Add(ParseBowlingData(year, playerName, bowl));
             }
             
-            return CreateInsertScript(playerNames, battingSeasons, bowlingSeasons);
+            return CreateInsertScript(playerNames, battingSeasons, bowlingSeasons, fieldingSeasons);
         }
         
         public static BattingSeason ParseBattingData(string year, string name, List<string> args)
@@ -84,19 +87,37 @@ namespace SQLScriptGenerator.Logic
                 BestFigures = Tools.FormatBestFigures(args[6]),
             };
         }
+
+        private static FieldingSeason ParseFieldingData(string year, string name, List<string> args)
+        {
+            Int32.TryParse(args[0], out var catches);
+            Int32.TryParse(args[1], out var stumpings);
+            
+                
+            // Simple stuff
+            return new FieldingSeason
+            {
+                Year = year,
+                PlayerName = name, 
+                Catches = catches, 
+                Stumpings = stumpings
+            };
+        }
         
         // TODO
         public static StringBuilder CreateInsertScript(List<string> playerNames, List<BattingSeason> battingSeasons, 
-            List<BowlingSeason> bowlingSeasons)
+            List<BowlingSeason> bowlingSeasons, List<FieldingSeason> fieldingSeasons)
         {
             var sb = new StringBuilder();
             var playerDetailsTable = "Players.Details";
-            var battingTable = "Summary.BattingSeason";
-            var bowlingTable = "Summary.BowlingSeason";
+            var battingTable = "players.batting";
+            var bowlingTable = "players.Bowling";
+            var fieldingTable = "players.fielding";
             
             playerNames.ForEach(x => sb.Append(Tools.CreatePlayerInsertStatement(x, playerDetailsTable)));
             battingSeasons.ForEach(x => sb.Append(CreateBattingScript(x, battingTable)));
             bowlingSeasons.ForEach(x => sb.Append(CreateBowlingScript(x, bowlingTable)));
+            fieldingSeasons.ForEach(x => sb.Append(CreateFieldingScript(x, fieldingTable)));
             
             return sb;
         }
@@ -115,6 +136,15 @@ WHERE PlayerName = '{d.PlayerName}'; {Environment.NewLine}";
             return $@"
 INSERT INTO {tableName} (PlayerId, Year, Overs, Maidens, Wickets, Runs, Average, FiveWicketHauls, BestFigsRuns, BestFigsWickets)
 SELECT PlayerId, {Tools.FormatYear(d.Year)}, {d.Overs}, {d.Maidens}, {d.Wickets}, {d.Runs}, {Tools.FormatAverage(d.Average)}, {d.FiveWicketHauls}, {Tools.FormatBestFigsString(d.BestFigures)}
+FROM Players.Details
+WHERE PlayerName = '{d.PlayerName}'; {Environment.NewLine}";
+        }
+
+        private static string CreateFieldingScript(FieldingSeason d, string tableName)
+        {
+            return $@"
+INSERT INTO {tableName} (PlayerId, Year, Catches, Stumpings)
+SELECT PlayerId, {Tools.FormatYear(d.Year)}, {d.Catches}, {d.Stumpings}
 FROM Players.Details
 WHERE PlayerName = '{d.PlayerName}'; {Environment.NewLine}";
         }
