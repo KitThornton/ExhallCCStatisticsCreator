@@ -8,6 +8,11 @@ namespace SQLScriptGenerator.Logic
 {
     public class CareerSummary
     {
+        private static string playerDetailsTable = "public.\"Players\"";
+        private static string battingTable = "public.\"Batting\"";
+        private static string bowlingTable = "public.\"Bowling\"";
+        private static string fieldingTable = "public.\"Fielding\"";
+        
         public static StringBuilder GenerateCareerSummaryScript(List<string> data)
         {
             List<BattingSeason> battingSeasons = new List<BattingSeason>();
@@ -109,11 +114,7 @@ namespace SQLScriptGenerator.Logic
             List<BowlingSeason> bowlingSeasons, List<FieldingSeason> fieldingSeasons)
         {
             var sb = new StringBuilder();
-            var playerDetailsTable = "Players.Details";
-            var battingTable = "players.batting";
-            var bowlingTable = "players.Bowling";
-            var fieldingTable = "players.fielding";
-            
+
             playerNames.ForEach(x => sb.Append(Tools.CreatePlayerInsertStatement(x, playerDetailsTable)));
             battingSeasons.ForEach(x => sb.Append(CreateBattingScript(x, battingTable)));
             bowlingSeasons.ForEach(x => sb.Append(CreateBowlingScript(x, bowlingTable)));
@@ -125,28 +126,28 @@ namespace SQLScriptGenerator.Logic
         private static string CreateBattingScript(BattingSeason d, string tableName)
         {
             return $@"
-INSERT INTO {tableName} (PlayerId, Year, Matches, Innings, NotOuts, Average, Runs, Fifties, Hundreds, HighScore, HighScoreNotOut)
-SELECT PlayerId, {Tools.FormatYear(d.Year)}, {d.Matches}, {d.Innings}, {d.NotOuts}, {Tools.FormatAverage(d.Average)}, {d.Runs}, {d.Fifties}, {d.Hundreds}, {Tools.FormatHighScore(d.HighScore)}
-FROM Players.Details
-WHERE PlayerName = '{d.PlayerName}'; {Environment.NewLine}";
+INSERT INTO {tableName} (""PlayerId"", ""Year"", ""Matches"", ""Innings"", ""NotOuts"", ""Average"", ""Runs"", ""Fifties"", ""Hundreds"", ""HighScore"", ""HighScoreNotOut"")
+SELECT ""Id"", {Tools.FormatYear(d.Year)}, {d.Matches}, {d.Innings}, {d.NotOuts}, {Tools.FormatAverage(d.Average)}, {d.Runs}, {d.Fifties}, {d.Hundreds}, {Tools.FormatHighScore(d.HighScore)}
+FROM {playerDetailsTable}
+WHERE ""Name"" = '{d.PlayerName}'; {Environment.NewLine}";
         }
         
         private static string CreateBowlingScript(BowlingSeason d, string tableName)
         {
             return $@"
-INSERT INTO {tableName} (PlayerId, Year, Overs, Maidens, Wickets, Runs, Average, FiveWicketHauls, BestFigsRuns, BestFigsWickets)
-SELECT PlayerId, {Tools.FormatYear(d.Year)}, {d.Overs}, {d.Maidens}, {d.Wickets}, {d.Runs}, {Tools.FormatAverage(d.Average)}, {d.FiveWicketHauls}, {Tools.FormatBestFigsString(d.BestFigures)}
-FROM Players.Details
-WHERE PlayerName = '{d.PlayerName}'; {Environment.NewLine}";
+INSERT INTO {tableName} (""PlayerId"", ""Year"", ""Overs"", ""Maidens"", ""Wickets"", ""Runs"", ""Average"", ""FiveWicketHauls"", ""BestFigsRuns"", ""BestFigsWickets"")
+SELECT ""Id"", {Tools.FormatYear(d.Year)}, {d.Overs}, {d.Maidens}, {d.Wickets}, {d.Runs}, {Tools.FormatAverage(d.Average)}, {d.FiveWicketHauls}, {Tools.FormatBestFigsString(d.BestFigures)}
+FROM {playerDetailsTable}
+WHERE ""Name"" = '{d.PlayerName}'; {Environment.NewLine}";
         }
 
         private static string CreateFieldingScript(FieldingSeason d, string tableName)
         {
             return $@"
-INSERT INTO {tableName} (PlayerId, Year, Catches, Stumpings)
-SELECT PlayerId, {Tools.FormatYear(d.Year)}, {d.Catches}, {d.Stumpings}
-FROM Players.Details
-WHERE PlayerName = '{d.PlayerName}'; {Environment.NewLine}";
+INSERT INTO {tableName} (""PlayerId"", ""Year"", ""Catches"", ""Stumpings"")
+SELECT ""Id"", {Tools.FormatYear(d.Year)}, {d.Catches}, {d.Stumpings}
+FROM {playerDetailsTable}
+WHERE ""Name"" = '{d.PlayerName}'; {Environment.NewLine}";
         }
     }
 }
